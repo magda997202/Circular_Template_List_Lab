@@ -1,5 +1,7 @@
+
 #include <iostream>
 #include <string>
+#include <limits>
 #include "Media.h"
 #include "Podcast.h"
 #include "Song.h"
@@ -29,15 +31,17 @@ int getIntInput(const std::string& prompt) {
 
 // === 6. Main Program Loop ===
 int main() {
-    LinkedList myPlaylist;
+    // Instantiate the templated list with Song* (for Phase 1)
+    // The structure is ready to be instantiated with Media* later
+    LinkedList<Song> myPlaylist;  // Stores Song* pointers
     int choice = 0;
 
-    std::cout << "Welcome to the Playlist Manager Starter Program (Polymorphic Edition)!" << std::endl;
+    std::cout << "Welcome to the Playlist Manager Starter Program (Templated Circular Edition)!" << std::endl;
 
     // Demonstrate initial insertion of various media types
     myPlaylist.insert(new Song("Bohemian Rhapsody", "Queen", 355));
-    myPlaylist.insert(new Podcast("The Daily: AI Ethics", "Michael Barbiero", 145));
     myPlaylist.insert(new Song("Stairway to Heaven", "Led Zeppelin", 482));
+    myPlaylist.insert(new Song("Imagine", "John Lennon", 183));
 
     do {
         std::cout << "\n--- Menu ---" << std::endl;
@@ -45,12 +49,13 @@ int main() {
         std::cout << "2. Add a new Podcast" << std::endl;
         std::cout << "3. Display Playlist" << std::endl;
         std::cout << "4. Play Current Media Item" << std::endl;
-        std::cout << "5. Exit" << std::endl;
+        std::cout << "5. Play Next (Circular)" << std::endl;
+        std::cout << "6. Exit" << std::endl;
         std::cout << "Enter your choice: ";
 
         if (!(std::cin >> choice)) {
             std::cout << "Invalid input. Exiting." << std::endl;
-            choice = 5;
+            choice = 6;
         }
 
         switch (choice) {
@@ -60,7 +65,7 @@ int main() {
                 std::string artist = getLineInput("Enter Artist Name: ");
                 int duration = getIntInput("Enter duration in seconds: ");
 
-                // Create the Song object dynamically and insert it as Media*
+                // Create the Song object dynamically and insert it as Song*
                 myPlaylist.insert(new Song(title, artist, duration));
                 std::cout << "[Song added successfully!]" << std::endl;
                 break;
@@ -70,9 +75,15 @@ int main() {
                 std::string host = getLineInput("Enter Host Name: ");
                 int episodeNum = getIntInput("Enter Episode Number: ");
 
-                // Create the Podcast object dynamically and insert it as Media*
-                myPlaylist.insert(new Podcast(title, host, episodeNum));
-                std::cout << "[Podcast added successfully!]" << std::endl;
+                // For Phase 1, we're using LinkedList<Song>, so Podcasts cannot be added yet
+                // This will be enabled in later phases when we switch to LinkedList<Media*>
+                std::cout << "[Note: Podcasts will be available when using LinkedList<Media*>]" << std::endl;
+                std::cout << "[Creating and storing as Song for demonstration...]" << std::endl;
+
+                // Temporary: Store as Song for Phase 1
+                std::string combinedTitle = title + " (Podcast Episode)";
+                myPlaylist.insert(new Song(combinedTitle, host, episodeNum * 60)); // Rough duration conversion
+                std::cout << "[Item added as Song for Phase 1 demonstration!]" << std::endl;
                 break;
             }
             case 3:
@@ -82,14 +93,17 @@ int main() {
                 myPlaylist.playCurrent();
                 break;
             case 5:
+                myPlaylist.playNext();  // New circular play method
+                break;
+            case 6:
                 std::cout << "Exiting Playlist Manager..." << std::endl;
                 break;
             default:
                 std::cout << "Invalid menu choice. Please try again." << std::endl;
                 break;
         }
-    } while (choice != 5);
+    } while (choice != 6);
 
-    // The LinkedList destructor is called automatically when 'myPlaylist' goes out of scope.
+    // The LinkedList destructor is called automatically when 'myPlaylist' goes out of scope
     return 0;
 }
